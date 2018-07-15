@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="{{ url_for('static', filename='index.js') }}"></script>
+        <title>Chatterbox</title>
+    </head>
+    <body>
+        <div id="greeting"></div>
+        <br>
+        <form id="nameInput">
+            <input id="displayName" autocomplete="off" autofocus placeholder="Display Name" type="text">
+            <input id="nameButton" type="submit" value="Go!">
+        </form>
+    </body>
+</html>
