@@ -2,3 +2,9 @@
     float:left;
     background-color:red;
 }
+#channels{
+    list-style-type: none;
+}
+#header{
+    background-color:#FFDC1C;
+}
