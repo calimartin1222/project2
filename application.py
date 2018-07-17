@@ -17,3 +17,8 @@ def index():
 @app.route("/hello", methods=["POST"])
 def hello():
     greeting = request.form.get("greeting")
+
+@app.route("/newChannel", methods=["POST"])
+def hello():
+    global channel_list
+    channel_list.apped(request.form.get("newChannel"))
