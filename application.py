@@ -9,11 +9,12 @@ socketio = SocketIO(app)
 
 # list of all channels
 channel_list = ['Select a Channel','General']
-messagesList = []
+currentChannel = ""
+messages = []
 
 @app.route("/")
 def index():
-    return render_template("index.html", channel_list=channel_list)
+    return render_template("index.html", channel_list=channel_list, messages=messages)
 
 @app.route("/hello", methods=["POST"])
 def hello():
@@ -28,9 +29,10 @@ def newChannel():
 
 @app.route("/<channel>", methods=["POST"])
 def channel(channel):
+    currentChannel=channel;
     return channel;
 
 @socketio.on("submit message")
-def message(data):
-    selection = data["selection"]
-    emit("display messages", selection, broadcast=True)
+def submit(message):
+    messages.append(message)
+    emit("display messages", message, broadcast=True)

@@ -12,7 +12,9 @@ body{
     color : #EFF1F3;
     border : 0.5px solid #EFF1F3;
 }
-
 #messageInput{
     width:90%;
+}
+#messages{
+    list-style-type: none;
 }

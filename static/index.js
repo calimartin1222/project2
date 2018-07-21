@@ -3,11 +3,9 @@ if (!localStorage.getItem('name'))
                 localStorage.setItem('name', 'guest');
 
 document.addEventListener('DOMContentLoaded', () => {
-
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-
     document.getElementById("submit").disabled = true;
-    document.getElementById("messagesDiv").visible = false;
+    document.getElementById("messagesDiv").style.visibility = "hidden";
 
     var name = localStorage.getItem('name');
 
@@ -18,6 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const greeting = `Hello, ${name}!`;
 
     document.querySelector('#greeting').innerHTML = greeting;
+
+    if (!localStorage.getItem('name'))
+        localStorage.setItem('name', 'guest');
 
     document.querySelector('#nameInput').onsubmit = () => {
 
@@ -37,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             document.querySelector('#name').value = "";
         };
+        name = localStorage.getItem('name');
 
         const data = new FormData();
 
@@ -96,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
         request.onload = () => {
             document.querySelector('#channelTitle').innerHTML = `${channelName} Channel`;
 
-            document.getElementById("messagesDiv").visible = true;
+            document.getElementById("messagesDiv").style.visibility = "visible";
         };
 
         const data = new FormData();
@@ -109,13 +111,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     };
     socket.on('connect', () => {
-        document.querySelector('#submitMessage').onclick = () => {
-            const selection = document.querySelector('#messageInput').value;
-            socket.emit('submit message', {'selection': selection});
+        document.querySelector('#messageSubmit').onclick = () => {
+            const message = document.querySelector('#messageInput').value;
+            socket.emit('submit message', message);
         };
     });
-
-    socket.on("display messages", data => {
-        document.querySelector('#messages').innerHTML = data;
+    socket.on('display messages', message => {
+        const li = document.createElement('li');
+        li.innerHTML = `${name} says: ${message}`;
+        document.querySelector('#messages').append(li);
     });
 });

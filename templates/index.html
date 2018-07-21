@@ -44,11 +44,14 @@
                 <div class="col-md">
                     <div id ="messagesDiv">
                         <h1 id ="channelTitle"></h1>
-                        <p id="messages"></p>
-                        <form id="newMess">
-                            <input id="messageInput" autocomplete="off" autofocus placeholder="New Message" type="text">
-                            <input id="submitMessage" type="submit" value="Send">
-                        </form>
+                        <ul id="messages">
+                            {% for message in messages %}
+                            <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                        <hr>
+                        <input type="text" id="messageInput" placeholder="Type Your Message">
+                        <button id="messageSubmit">Send</button>
                     </div>
                 </div>
             </div>
