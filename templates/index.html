@@ -11,41 +11,45 @@
 
         <div class="jumbotron jumbotron-fluid" id ="header">
             <div class="container">
-                <h1 id ="greeting"class="display-4"></h1>
-                <p class="lead">
-                    <p>Please enter a Display Name if You Are a First Time User</p>
-                    <form id="nameInput">
-                        <input id="name" autocomplete="off" autofocus placeholder="Display Name" type="text">
-                        <input id="submit" type="submit" value="Go!">
-                    </form>
-                </p>
+                <h1 class="display-5">Chatterbox</h1><p class="lead"> Project2
+
             </div>
         </div>
 
         <div class="container">
             <div class="row">
-                <div class="col-sm">
-                    <ul id="channels">
+                <div class="col-">
+                    <h2 id ="greeting"></h2>
+                    <p id="disNameTitle">Please enter a Display Name if You Are a First Time User</p>
+                    <form id="nameInput">
+                        <input id="name" autocomplete="off" autofocus placeholder="Display Name" type="text">
+                        <input id="submit" type="submit" value="Go!">
+                    </form>
+                    <br>
+                    <div class= "break"></div>
+                    <br>
+                    <select id="channels">
                         {% for channel in channel_list %}
-                        <li><a href = "/{{ channel }}">{{ channel }}</a></li>
+                        <option value="{{ channel }}">{{ channel }}</option>
                         {% endfor %}
-                    </ul>
+                    </select>
+                    <br>
+                    <br>
+                    <p>...Or make a new channel</p>
                     <form id="newChannel">
                         <input id="channelName" autocomplete="off" autofocus placeholder="Channel Name" type="text">
-                        <input id="submitChannel" type="submit" value="Go!">
+                        <input id="submitChannel" type="submit" value="Create">
                     </form>
                 </div>
-                <div class="col-sm">
-                    <form id="newChannel">
-                        <input id="channelName" autocomplete="off" autofocus placeholder="New Message" type="text">
-                    </form>
-                    <div>Yes Votes: <span id="yes">{{ votes["yes"] }}</span></div>
-                    <div>No Votes: <span id="no">{{ votes["no"] }}</span></div>
-                    <div>Maybe Votes: <span id="maybe">{{ votes["maybe"] }}<span></div>
-                    <hr>
-                    <button data-vote="yes">Yes</button>
-                    <button data-vote="no">No</button>
-                    <button data-vote="maybe">Maybe</button>
+                <div class="col-md">
+                    <div id ="messagesDiv">
+                        <h1 id ="channelTitle"></h1>
+                        <p id="messages"></p>
+                        <form id="newMess">
+                            <input id="messageInput" autocomplete="off" autofocus placeholder="New Message" type="text">
+                            <input id="submitMessage" type="submit" value="Send">
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

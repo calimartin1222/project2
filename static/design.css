@@ -1,10 +1,18 @@
-.side-by-side{
-    float:left;
-    background-color:red;
-}
-#channels{
-    list-style-type: none;
+body{
+    background-color: #223843;
+    color: #EFF1F3;
 }
 #header{
-    background-color:#FFDC1C;
+    background-color: #D77A61;
+}
+#headerRight{
+    float: right;
+}
+.break{
+    color : #EFF1F3;
+    border : 0.5px solid #EFF1F3;
+}
+
+#messageInput{
+    width:90%;
 }

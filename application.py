@@ -8,25 +8,29 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 socketio = SocketIO(app)
 
 # list of all channels
-votes = {"yes": 0, "no": 0, "maybe": 0}
-channel_list = ['general']
+channel_list = ['Select a Channel','General']
+messagesList = []
 
 @app.route("/")
 def index():
-    global channel_list
-    return render_template("index.html", channel_list=channel_list, votes=votes)
+    return render_template("index.html", channel_list=channel_list)
 
 @app.route("/hello", methods=["POST"])
 def hello():
     greeting = request.form.get("greeting")
+    return greeting;
 
 @app.route("/newChannel", methods=["POST"])
 def newChannel():
-    global channel_list
-    channel_list.append(request.form.get("channelName"))
+    channelName = request.form.get("channelName")
+    channel_list.append(channelName)
+    return channelName;
 
-@socketio.on("submit vote")
-def vote(data):
+@app.route("/<channel>", methods=["POST"])
+def channel(channel):
+    return channel;
+
+@socketio.on("submit message")
+def message(data):
     selection = data["selection"]
-    votes[selection] += 1
-    emit("vote totals", votes, broadcast=True)
+    emit("display messages", selection, broadcast=True)
