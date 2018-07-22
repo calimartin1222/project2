@@ -8,23 +8,22 @@
         <title>Chatterbox</title>
     </head>
     <body>
-
         <div class="jumbotron jumbotron-fluid" id ="header">
             <div class="container">
-                <h1 class="display-5">Chatterbox</h1><p class="lead"> Project2
-
+                <h1 class="display-5">Chatterbox</h1><p class="lead"> Project2</p>
             </div>
         </div>
-
         <div class="container">
             <div class="row">
                 <div class="col-">
                     <h2 id ="greeting"></h2>
-                    <p id="disNameTitle">Please enter a Display Name if You Are a First Time User</p>
-                    <form id="nameInput">
-                        <input id="name" autocomplete="off" autofocus placeholder="Display Name" type="text">
-                        <input id="submit" type="submit" value="Go!">
-                    </form>
+                    <div id="nameDiv">
+                        <p id="disNameTitle">Please enter a Display Name</p>
+                        <form id="nameInput">
+                            <input id="name" autocomplete="off" autofocus placeholder="Display Name" type="text">
+                            <input id="submit" type="submit" value="Go!">
+                        </form>
+                    </div>
                     <br>
                     <div class= "break"></div>
                     <br>
@@ -41,18 +40,7 @@
                         <input id="submitChannel" type="submit" value="Create">
                     </form>
                 </div>
-                <div class="col-md">
-                    <div id ="messagesDiv">
-                        <h1 id ="channelTitle"></h1>
-                        <ul id="messages">
-                            {% for message in messages %}
-                            <li>{{ message }}</li>
-                            {% endfor %}
-                        </ul>
-                        <hr>
-                        <input type="text" id="messageInput" placeholder="Type Your Message">
-                        <button id="messageSubmit">Send</button>
-                    </div>
+                <div class="col-md" id="messageColumn">
                 </div>
             </div>
         </div>
