@@ -14,7 +14,7 @@ messages = []
 
 @app.route("/")
 def index():
-    return render_template("index.html", channel_list=channel_list, messages=messages, currentChannel=currentChannel)
+    return render_template("index.html", channel_list=channel_list, messages=messages)
 
 @app.route("/hello", methods=["POST"])
 def hello():
@@ -23,9 +23,9 @@ def hello():
 
 @app.route("/newChannel", methods=["POST"])
 def newChannel():
-    channelName = request.form.get("channelName")
-    channel_list.append(channelName)
-    return channelName
+    channel = request.form.get("channel")
+    channel_list.append(channel)
+    return channel
 
 @app.route("/<channel>", methods=["POST"])
 def channel(channel):

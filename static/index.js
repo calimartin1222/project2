@@ -5,19 +5,42 @@ if (!localStorage.getItem('localChannel'))
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+    //---working----------------------------------------------
+    //document.getElementById('greeting').style.color = "red";
+    //document.querySelector('#greeting').style.color = "red";
 
-    var name = localStorage.getItem('name');
+    renderChannels("channels");
 
-    var globalChannelName = localStorage.getItem('localChannel');
+    var localChannelName = trimStr(localStorage.getItem('localChannel'));
 
-    renderChannel(globalChannelName);
+    var name = localStorage.getItem("name");
 
-    document.getElementById("nameDiv").style.display = "none";
+    var channelRaw = '';
+
+    removeEL("nameDiv");
 
     if(name === "guest"){
-        document.getElementById("nameDiv").style.display = "block";
+        displayEL("nameDiv");
     }
+
+    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+    socket.on('connect', () => {
+
+        document.querySelector(`#${localChannelName}Submit`).onclick = () => {
+
+            const message = document.querySelector(`#${localChannelName}Input`).value;
+
+            if(!message){
+
+                alert("Please enter a message");
+
+                return;
+            }
+
+            socket.emit('submit message', message);
+        };
+    });
 
     document.querySelector('#greeting').innerHTML = `Hello, ${name}!`;
 
@@ -41,6 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const greeting = `Hello, ${name}!`;
 
             document.querySelector('#greeting').innerHTML = greeting;
+
+            removeEL("nameDiv");
         };
 
         const data = new FormData();
@@ -56,62 +81,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const request = new XMLHttpRequest();
 
-        const channelName = document.querySelector('#channelName').value;
+        channelRaw = document.querySelector('#channelName').value;
 
-        if(!channelName){
+        if(!channelRaw){
             alert("Please enter a valid channel name");
             return
         }
 
-        renderChannel(channelName);
+        const channel = trimStr(channelRaw);
 
         request.open('POST', '/newChannel');
 
         request.onload = () => {
 
+            renderChannel(channel);
+
             const option = document.createElement("option");
 
-            option.innerHTML = channelName;
+            option.innerHTML = channelRaw;
+
+            option.value = channel;
 
             document.querySelector('#channels').add(option);
 
             document.querySelector('#channelName').value = "";
-
-        };
-
-        const data = new FormData();
-
-        data.append('channelName', channelName);
-
-        request.send(data);
-
-        return false;
-
-    };
-
- document.querySelector('#channels').onchange = function() {
-
-        const request = new XMLHttpRequest();
-
-        const channel = this.value;
-
-        if(channel === "Select a Channel"){
-            alert("please select a channel");
-            return;
-        }
-
-        document.getElementById(`#${channel}`).style.display = "none";
-
-        localStorage.setItem('localChannel', channel);
-
-        globalChannelName = channel;
-
-        request.open('POST', `/${channel}`);
-
-        request.onload = () => {
-
-            document.getElementById(`#${channel}`).style.display = "block";
-
         };
 
         const data = new FormData();
@@ -124,32 +117,108 @@ document.addEventListener('DOMContentLoaded', () => {
 
     };
 
-    function renderChannel(channel){
+ document.querySelector('#channels').onchange = function() {
 
-        const channelName = channel;
+        const request = new XMLHttpRequest();
 
-        if(!channelName){
-            alert("invalid put in renderChannel funct");
+        channelRaw = this.value;
+
+        if(channelRaw === "Select a Channel"){
+            alert("please select a channel");
             return;
         }
 
-        const div = document.createElement('div');
-        div.id = `#${channelName}`;
+        if(channelRaw === null){
+            alert("error");
+            return;
+        }
 
+        const channel = trimStr(channelRaw);
+
+        localStorage.setItem('localChannel', channel);
+
+        localChannelName = channel;
+
+        request.open('POST', `/${channel}`);
+
+        request.onload = () => {
+
+            displayEL(channel);
+
+        };
+
+        const data = new FormData();
+
+        data.append('channel', channel);
+
+        request.send(data);
+
+        return false;
+
+    };
+    socket.on('display messages', message => {
+
+        const li = document.createElement('li');
+
+        li.innerHTML = message;
+
+        document.querySelector(`#${localChannelName}List`).add(li);
+
+        document.querySelector(`#${localChannelName}Input`).value = "";
+
+    });
+
+    function trimStr(str){
+        return str.replace(/\s/g,'');
+    }
+    function removeEL(element_id){
+        document.querySelector(`#${element_id}`).style.display = "none";
+    }
+    function displayEL(element_id){
+        document.querySelector(`#${element_id}`).style.display = "block";
+    }
+
+    function renderChannels(channels){
+
+        channelList = document.getElementById(`${channels}`);
+
+        var i;
+
+        for(i = 0; i < channelList.length; i++){
+
+            if (channelList.options[i].value === "Select a Channel"){
+                continue;
+            }
+            alert('foor loop got passed through');
+            renderChannel(trimStr(channelList.options[i].value));
+        }
+    }
+    function renderChannel(channel){
+        if(!channel){
+            alert("Error: null channel name");
+            return;
+        }
+        alert(channel);
         const h1 = document.createElement('h1');
-        h1.id = `#${channelName}Title`;
-        h1.innerHTML = `${channelName} Channel`;
+        h1.innerHTML = `${channel} Channel`;
+
+        var channelName = trimStr(channel);
+
+        h1.id = `${channelName}Title`;
+
+        const div = document.createElement('div');
+        div.id = `${channelName}`;
 
         const ul = document.createElement('ul');
-        ul.id = `#${channelName}List`;
+        ul.id = `${channelName}List`;
 
         const input = document.createElement('input');
-        input.id = `#${channelName}Input`;
+        input.id = `${channelName}Input`;
         input.setAttribute("type", "text");
         input.setAttribute("placeholder", "Type Your Message");
 
         const button = document.createElement('button');
-        button.id = `#${channelName}Submit`;
+        button.id = `${channelName}Submit`;
         button.innerHTML = "Send";
 
         div.appendChild(h1);
@@ -157,34 +226,8 @@ document.addEventListener('DOMContentLoaded', () => {
         div.appendChild(input);
         div.appendChild(button);
 
+        removeEL(channel);
+
         document.querySelector('#messageColumn').appendChild(div);
-
-        document.getElementById(`#${channelName}`).style.display = "none";
     }
-
-    socket.on('connect', () => {
-        document.querySelector(`#${globalChannelName}Submit`).onclick = () => {
-
-            const message = document.querySelector(`#${globalChannelName}Input`).value;
-
-            if(!message){
-                alert("Please enter a message");
-                return;
-            }
-
-            socket.emit('submit message', message);
-        };
-    });
-
-    socket.on('display messages', message => {
-
-        const li = document.createElement('li');
-
-        li.innerHTML = message;
-
-        document.getElementById(`#${globalChannelName}List`).add(li);
-
-        document.querySelector(`#${globalChannelName}Input`).value = "";
-
-    });
 });

@@ -11,6 +11,8 @@ body{
 .break{
     color : #EFF1F3;
     border : 0.5px solid #EFF1F3;
+    margin-top: 25px;
+    margin-bottom: 20px;
 }
 input{
     width:90%;
