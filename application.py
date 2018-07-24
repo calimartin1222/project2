@@ -33,5 +33,4 @@ def channel(channel):
 
 @socketio.on("submit message")
 def submit(message):
-    #messageSend = f"{name} says: {message}"
     emit("display messages", message, broadcast=True)
