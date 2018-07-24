@@ -1,8 +1,9 @@
 // initialize global lists used later on for storage purposes
-var channelsRendered = [];
-var allMessages = [];
+var list = ['Select a Channel'];
+var list2 = ["Select a Channel", "placeholder"];
 
-//check all the local storage variables - if they are null, set them to a default so they aren't empty
+//check all the local storage variables - if they are null, set them to a default so they
+//aren't empty and don't trhow an error later
 if (!localStorage.getItem('name'))
     localStorage.setItem('name', 'guest');
 
@@ -10,35 +11,38 @@ if (!localStorage.getItem('localChannel'))
     localStorage.setItem('localChannel', 'General');
 
 if (!localStorage.getItem('channelsRendered'))
-    channelsRendered = ['Select a Channel'];
-    localStorage.setItem('channelsRendered', JSON.stringify(channelsRendered));
+    localStorage.setItem('channelsRendered', JSON.stringify(list));
 
 if (!localStorage.getItem('allMessages'))
-    allMessages.push("Select a Channel", "placeholder");
-    localStorage.setItem('allMessages', JSON.stringify(allMessages));
+    localStorage.setItem('allMessages', JSON.stringify(list2));
 
 //when the page loads
 document.addEventListener('DOMContentLoaded', () => {
 
-    //sets the global list "channelsRendered" to either the default or stored channels
-    //variable changed/used on lines 187,188,189,239,240,241
-    channelsRendered = JSON.parse(localStorage.getItem('channelsRendered'));
-
-    //renders the current channel, whether it be the default "General" or what the user was last on
-    //calls the renderChannel function defined on lines 173-243
-    renderChannel(trimStr(localStorage.getItem('localChannel')));
-
     //initializes and sets the current channel as a global variable that can be used later
-    //used on lines 138, 264, 266, 275, 289, 291
     var localChannelName = trimStr(localStorage.getItem('localChannel'));
 
+    //resets div column when page loads
+    document.querySelector('#messageColumn').innerHTML = '';
+
+    //renders selected channel
+    renderChannel(localChannelName);
+
+    //sets the global list "channelsRendered" to either channels that
+    //have already been renderedthe default if the local storage variable was null
+    channelsRendered = JSON.parse(localStorage.getItem('channelsRendered'));
+
+    //renders the current channel, either the default "General" or what the user was last on
+    renderChannel(trimStr(localStorage.getItem('localChannel')));
+
+
+
     //initializes and sets the current user name as a global variable that can be used later
-    // whether it be the default "guest" or what the user entered as their display name
-    //used on lines 138, 264, 266, 275, 289, 291
+    // whether it be the default "guest" or what the user entered as their display name earlier
     var name = localStorage.getItem("name");
 
     //initializes an empty global variable that is used for the user's new channel input
-    //ie when they enter  achannel with a space (or multiple spaces) it saves that and uses
+    //ie when they enter a channel name with a space (or multiple spaces) it saves that and uses
     //that for the channel title, but it is stored and used in the program without the spaces to avoid errors
     var channelRaw = '';
 
@@ -80,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
             //sets the variable to what the new header should say
             const greeting = `Hello, ${name}!`;
 
+            //sets the inner HTML of the heading to the new greeting
             document.querySelector('#greeting').innerHTML = greeting;
 
             //removes the form now that the user wont need to use it
@@ -111,8 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        //sets a constant channel that is "trimmed" (spaces are taken out)
-        //this is so the name can be used programmatically later on
+        //sets a constant variable channel that is "trimmed" (spaces are taken out)
+        //this is so the channel name can be used programmatically later on
         const channel = trimStr(channelRaw);
 
         request.open('POST', '/newChannel');
@@ -122,21 +127,21 @@ document.addEventListener('DOMContentLoaded', () => {
             //makes a new "option" element and has it say what the user input was
             const option = document.createElement("option");
 
+            //sets the text of the option to what the user submitted
             option.innerHTML = channelRaw;
 
-            //sets the value of the option to the trimmed channel name 'channel'
+            //sets the value of the option to the trimmed channel name
             option.value = channel;
 
-            //adds the option to the already existing select element with id channels
+            //adds the option to the already existing select list element with id channels
             document.querySelector('#channels').add(option);
 
-            //makes the text field empty, just an aesthetics choice
+            //makes the text field empty after, just an aesthetics choice
             document.querySelector('#channelName').value = "";
         };
 
         //makes and sends a form 'POST' request with the channel so
         //it can be added to the dropdown, but doesn't refresh the page
-
         const data = new FormData();
 
         data.append('channel', channel);
@@ -173,8 +178,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         //sets global variable localChannelName to the trimmed selection
         localChannelName = channel;
+        localStorage.setItem('localChannel', channel);
 
-        //opens a request for the url that is / whatever the channel the user selected is
+        //opens a request for the url that is whatever the channel the user selected is
         request.open('POST', `/${channel}`);
 
         request.onload = () => {
@@ -183,18 +189,11 @@ document.addEventListener('DOMContentLoaded', () => {
             //just resets the area
             document.querySelector('#messageColumn').innerHTML = '';
 
-            //checks if channel has already been rendered,
-            //and if it has, it just updates the messages
-            if(renderChannel(channel) === 'already rendered'){
-                //renders the channel specific messages, just updates
-                renderMessages(channel);
-            }
-
-            //renders the channel
+            //renders selected channel
             renderChannel(channel);
 
             //sets the local storage variable localChannel to the channel the user selected
-            localStorage.setItem('localChannel', channel);
+
         };
 
         //makes and sends a form 'POST' request with the channel so
@@ -228,6 +227,10 @@ document.addEventListener('DOMContentLoaded', () => {
     //defines the renderChannel function called when the
     //user selects a channel from the drop down
     function renderChannel(channelIn){
+
+        allMessages = JSON.parse(localStorage.getItem('allMessages'));
+
+        channelsRendered = JSON.parse(localStorage.getItem('channelsRendered'));
 
         //sets a constant variable equal to the parameter passed
         const channel = trimStr(channelIn);
@@ -273,17 +276,6 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem("allMessages", JSON.stringify(allMessages));
         }
 
-        //goes through elements of the list all messages
-        //for every element that is equal to the channel,
-        for(i = 0; i < allMessages.length; i++){
-            if( allMessages[i]=== channel){
-                alert(`printing out ${allMessages[i+1]} in list should be workin`);
-                const li = document.createElement('li');
-                li.innerHTML = allMessages[i+1];
-                ul.append(li);
-            }
-        }
-
         //creates text input element sets its id and other properties
         const input = document.createElement('input');
         input.id = `${channel}Input`;
@@ -304,12 +296,21 @@ document.addEventListener('DOMContentLoaded', () => {
         //adds the div to the messageColumn div
         document.querySelector('#messageColumn').appendChild(div);
 
+        renderMessages(channelName);
+
         //adds rendered channel to the channelsRendered list and updates local storage
         channelsRendered.push(channel);
         localStorage.setItem("channelsRendered", JSON.stringify(channelsRendered));
     }
 
+    //defines the renderMessages function
     function renderMessages(channelName){
+
+        allMessages = JSON.parse(localStorage.getItem('allMessages'));
+
+        //for loop that cycles through each element of allMessages and if
+        //the element is equal to the current channel, it puts the next element
+        //into a list item element and adds it to the specific channel's list
         for(i = 0; i < allMessages.length; i++){
             if( allMessages[i] === channelName){
                 alert(`printing out ${allMessages[i+1]} in list should be workin`);
@@ -318,17 +319,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById(`${channelName}List`).append(li);
             }
         }
-
     }
 
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
     socket.on('connect', () => {
+        //when the button that has the local channel name id is clicked on
+        document.getElementById(`${localChannelName}Submit`).onclick = () => {
 
-        document.querySelector(`#${localChannelName}Submit`).onclick = () => {
-
+            //makes a variable called message equal to the text field's value
             const message = document.querySelector(`#${localChannelName}Input`).value;
 
+            //error checking if field is empty
             if(!message){
 
                 alert("Please enter a message");
@@ -336,15 +338,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            allMessages.push(`${localChannelName}`,`${name} says: ${message}`);
+            //variables and set up for getting current time
+            var d = new Date();
+            var hour = d.getHours();
+            var mins = d.getMinutes();
+
+            if(hour<10){
+                hour = "0"+hour;
+            }
+            if(hour>12){
+                hour = hour - 12;
+            }
+            if(mins<10){
+                mins = "0"+mins;
+            }
+
+            //gets local storage user name
+            name = localStorage.getItem('name');
+
+            //plugs the message, time and user name into one string to 'send'
+            messageSend = `${hour}:${mins} ${name} says: ${message}`;
+
+            //adds message to list and local variable
+            allMessages.push(localChannelName, messageSend);
 
             localStorage.setItem("allMessages", JSON.stringify(allMessages));
 
-            socket.emit('submit message', message);
+            //goes to python @socketio.on("submit message")
+            socket.emit('submit message', messageSend);
         };
     });
 
     socket.on('display messages', message => {
+
+        //creates list item element and adds to channel specific message list
 
         const li = document.createElement('li');
 
